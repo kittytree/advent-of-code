@@ -53,8 +53,34 @@ impl Game {
 fn main() {
     let input_file = "src/input.txt".to_string();
     let games_from_input = games_from_input_file(input_file);
-    println!("size of input {}", games_from_input.len());
+    //println!("size of input {}", games_from_input.len());
     print_valid_id_sum(&games_from_input);
+    print_power_set(&games_from_input);
+}
+
+fn print_power_set(vec_of_games: &Vec<Game>) {
+    let mut power_sum = 0;
+    let mut max_green = 1;
+    let mut max_blue = 1;
+    let mut max_red = 1;
+    for games in vec_of_games {
+        games.game.iter().for_each(|reveal| {
+            if reveal.blue > max_blue {
+                max_blue = reveal.blue;
+            }
+            if reveal.green > max_green {
+                max_green = reveal.green;
+            }
+            if reveal.red > max_red {
+                max_red = reveal.red;
+            }
+        });
+        power_sum += max_green * max_blue * max_red;
+        max_green = 1;
+        max_blue = 1;
+        max_red = 1;
+    }
+    println!("id_sum: {}", power_sum);
 }
 fn print_valid_id_sum(vec_of_games: &Vec<Game>) {
     let mut i = 1;
