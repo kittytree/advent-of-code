@@ -2,42 +2,89 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
+const DIGITS: [&str; 9] = [
+    "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+];
+
 fn main() {
     let input_file = "src/input.txt".to_string();
-    let left_vector: Vec<i32> ;
-    let right_vector: Vec<i32>;
-    (left_vector, right_vector) = get_sorted_vectors(input_file);
-
-    get_part_one_distance(&left_vector, &right_vector);
-
+    let calibration_number = get_calibration_value(input_file);
+    println!("{}", calibration_number);
 }
 
-fn get_part_one_distance(left_vector: &Vec<i32>, right_vector: &Vec<i32>) {
-    let mut count = 0;
-    let mut total_distance = 0;
-    while count < left_vector.len() && right_vector.len() > 0 {
-        total_distance += (left_vector[count] - right_vector[count]).abs();
-        println!("{}", total_distance);
-        count += 1
-    }
-    println!("Total distance: {}", total_distance);
-}
-
-fn get_sorted_vectors(input_file: String)  -> (Vec<i32>, Vec<i32>){
-    let mut left_vector: Vec<i32> = Vec::new();
-    let mut right_vector: Vec<i32> = Vec::new();
+fn get_calibration_value(input_file: String) -> u32 {
+    let mut calibration_value = 0;
+    let mut line_numbers = vec![];
     if let Ok(lines) = read_lines(input_file) {
         for line in lines.flatten() {
-            let stripped_line = line.split("   ").collect::<Vec<&str>>();
-            left_vector.push(stripped_line[0].parse::<i32>().unwrap());
-            right_vector.push(stripped_line[1].parse::<i32>().unwrap());
+            line_numbers.push(get_first_number(&line));
+            line_numbers.push(get_last_number(&line));
+            calibration_value += give_calibration_value(&line_numbers);
+            line_numbers.clear();
         }
     }
-    left_vector.sort();
-    right_vector.sort();
-    return (left_vector, right_vector)
+    calibration_value
 }
 
+fn get_first_number(line: &String) -> u32 {
+    let mut first_number: u32 = 0;
+    let mut first_index = usize::MAX;
+    let mut digit_index = 1;
+    for digit in DIGITS.iter() {
+        let occurrences: Vec<_> = line.match_indices(*digit).collect();
+        if occurrences.len() > 0 {
+            if occurrences.first().unwrap().0 < first_index {
+                first_index = occurrences.first().unwrap().0;
+                first_number = digit_index;
+            }
+        }
+        digit_index += 1;
+    }
+    for (index, char) in line.chars().enumerate() {
+        if char.is_ascii_digit() {
+            if index < first_index {
+                first_number = char.to_digit(10).unwrap();
+                first_index = index;
+            }
+        }
+    }
+    first_number
+}
+fn get_last_number(line: &String) -> u32 {
+    let mut last_number: u32 = 0;
+    let mut last_index = usize::MIN;
+    let mut digit_index = 1;
+    for digit in DIGITS.iter() {
+        let occurrences: Vec<_> = line.match_indices(*digit).collect();
+        if occurrences.len() > 0 {
+            if occurrences.last().unwrap().0 > last_index {
+                last_index = occurrences.last().unwrap().0;
+                last_number = digit_index;
+            }
+        }
+        digit_index += 1;
+    }
+    for (index, char) in line.chars().enumerate() {
+        if char.is_ascii_digit() {
+            if index > last_index {
+                last_number = char.to_digit(10).unwrap();
+                last_index = index;
+            }
+        }
+    }
+    last_number
+}
+fn give_calibration_value(line_numbers: &Vec<u32>) -> u32 {
+    if line_numbers.len() == 0 {
+        0
+    } else {
+        if line_numbers[1] == 0 {
+            line_numbers[0] * 10 + line_numbers[0]
+        } else {
+            line_numbers[0] * 10 + line_numbers[1]
+        }
+    }
+}
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
     P: AsRef<Path>,
