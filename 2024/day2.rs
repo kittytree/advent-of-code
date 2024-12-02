@@ -3,7 +3,7 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 fn main() {
-    let input_file = "src/input.txt".to_string();
+    let input_file = "src/input2.txt".to_string();
     let reports: Vec<Vec<i32>>;
     reports = print_lines(input_file);
     print_number_of_valid_reports(reports);
@@ -13,17 +13,12 @@ fn print_number_of_valid_reports(reports: Vec<Vec<i32>>) {
     let mut count_valid_reports = 0;
 
     let mut last_entry: i32 = 0;
-    let mut is_first = true;
-
-    let mut is_decreasing: bool = true;
-    let mut is_increasing: bool = true;
-    let mut is_within_one_to_three: bool = true;
 
     for report in reports {
-        is_first = true;
-        is_decreasing = true;
-        is_increasing = true;
-        is_within_one_to_three = true;
+        let mut is_first = true;
+        let mut is_decreasing = true;
+        let mut is_increasing = true;
+        let mut is_within_one_to_three = true;
 
         for entry in report {
             print!("{} ", entry);
