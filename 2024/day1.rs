@@ -37,7 +37,6 @@ fn get_part_one_distance(left_vector: &Vec<i32>, right_vector: &Vec<i32>) {
     let mut total_distance = 0;
     while count < left_vector.len() && right_vector.len() > 0 {
         total_distance += (left_vector[count] - right_vector[count]).abs();
-        println!("{}", total_distance);
         count += 1
     }
     println!("Total distance part 1: {}", total_distance);
