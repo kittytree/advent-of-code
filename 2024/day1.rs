@@ -1,15 +1,37 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
 fn main() {
-    let input_file = "src/input.txt".to_string();
+    let input_file = "src/input2.txt".to_string();
     let left_vector: Vec<i32> ;
     let right_vector: Vec<i32>;
     (left_vector, right_vector) = get_sorted_vectors(input_file);
 
     get_part_one_distance(&left_vector, &right_vector);
+    get_part_two_distance(&left_vector, &right_vector);
 
+}
+
+fn get_part_two_distance(left_vector: &Vec<i32>, right_vector: &Vec<i32>) {
+    let mut count = 0;
+    let mut total_distance = 0;
+    let mut right_map: HashMap<i32, i32> = HashMap::new();
+    for vector in right_vector {
+        if right_map.contains_key(&vector) {
+            let vector_value = right_map.get(&vector).unwrap();
+            right_map.insert(vector.clone(), *vector_value + 1);
+        }else {
+            right_map.insert(vector.clone(), 1);
+        }
+    }
+    for vector in left_vector {
+        if right_map.contains_key(&vector) {
+            total_distance += right_map.get(&vector).unwrap() * vector;
+        }
+    }
+    println!("Total distance part 2: {}", total_distance);
 }
 
 fn get_part_one_distance(left_vector: &Vec<i32>, right_vector: &Vec<i32>) {
@@ -20,7 +42,7 @@ fn get_part_one_distance(left_vector: &Vec<i32>, right_vector: &Vec<i32>) {
         println!("{}", total_distance);
         count += 1
     }
-    println!("Total distance: {}", total_distance);
+    println!("Total distance part 1: {}", total_distance);
 }
 
 fn get_sorted_vectors(input_file: String)  -> (Vec<i32>, Vec<i32>){
