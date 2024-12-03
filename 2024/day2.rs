@@ -3,81 +3,78 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 fn main() {
-    let input_file = "src/input3.txt".to_string();
+    let input_file = "src/input.txt".to_string();
     let reports: Vec<Vec<i32>>;
     reports = print_lines(input_file);
     print_number_of_valid_reports(reports.clone());
+    println!();
+    // I needed a hint of using brute force to solve part 2
+    // was trying to do dynamic programming at first and failed :/
     print_number_of_valid_reports_using_dampener(reports.clone());
 }
 
 fn print_number_of_valid_reports_using_dampener(reports: Vec<Vec<i32>>) {
     let mut count_valid_reports = 0;
-    let mut count_bad_entries = 0;
+
     let mut last_entry: i32 = 0;
 
     for report in reports {
         let mut is_first = true;
         let mut is_decreasing = true;
         let mut is_increasing = true;
-        let mut bad_entry_lock = false;
-        let mut num_bad_increases = 0;
-        let mut num_bad_decreases = 0;
+        let mut is_within_one_to_three = true;
 
-        for entry in report {
-            print!("{} ", entry);
-            if is_first {
-                is_first = false;
-                last_entry = entry;
-            }else{
-                if ((entry - last_entry).abs() >= 1) && ((entry - last_entry).abs() <= 3 ) {
-                    if is_increasing {
-                        if last_entry - entry < 0 {
-                            if count_bad_entries < 1 && num_bad_increases > 0{
-                                num_bad_increases += 1;
-                                count_bad_entries += 1;
-                                if count_bad_entries != 1 {
-                                    bad_entry_lock = true;
+        let num_entries = report.len();
+        let mut count_outside = 0;
+        let mut count_inside = 0;
+        let mut valid_loop = false;
+
+        while count_outside < num_entries {
+            for entry in report.clone() {
+                if count_inside == count_outside {
+                }else{
+                    if is_first {
+                        is_first = false;
+                        last_entry = entry;
+                    }else{
+                        if ((entry - last_entry).abs() >= 1) && ((entry - last_entry).abs() <= 3 ) {
+                            if is_increasing {
+                                if last_entry - entry < 0 {
+                                    is_increasing = false;
                                 }
-                            }else {
-                                is_increasing = false;
                             }
+                            if is_decreasing {
+                                if last_entry - entry > 0 {
+                                    is_decreasing = false;
+                                }
+                            }
+                        }else {
+                            is_within_one_to_three = false;
                         }
                     }
-                    if is_decreasing && !bad_entry_lock {
-                        if last_entry - entry > 0 {
-                            if count_bad_entries < 1 && num_bad_increases > 0{
-                                num_bad_decreases += 1;
-                                count_bad_entries += 1;
-                                if count_bad_entries != 1 {
-                                    bad_entry_lock = true;
-                                }
-                            }else {
-                                is_decreasing = false;
-                            }
-                        }
-                    }
-                }else {
-                    bad_entry_lock = true;
-                    count_bad_entries += 1;
+                    last_entry = entry;
                 }
+                count_inside += 1;
             }
-            if !bad_entry_lock {
-                last_entry = entry;
+            if (is_decreasing || is_increasing) && is_within_one_to_three {
+                valid_loop = true;
             }
-            bad_entry_lock = false;
+            count_inside = 0;
+            count_outside += 1;
+            is_first = true;
+            is_decreasing = true;
+            is_increasing = true;
+            is_within_one_to_three = true;
+        }
+        count_outside = 0;
 
-        }
-        if (is_decreasing || is_increasing) && count_bad_entries <= 2 {
+
+        if valid_loop {
             count_valid_reports += 1;
-            println!(" and {} bad entries", count_bad_entries);
-        }else {
-            println!()
         }
-        count_bad_entries = 0;
     }
 
-    println!("Found {} valid reports using dampeners", count_valid_reports);
-
+    println!("Found {} valid reports without dampeners", count_valid_reports);
 }
 
 fn print_number_of_valid_reports(reports: Vec<Vec<i32>>) {
@@ -92,7 +89,6 @@ fn print_number_of_valid_reports(reports: Vec<Vec<i32>>) {
         let mut is_within_one_to_three = true;
 
         for entry in report {
-            print!("{} ", entry);
             if is_first {
                 is_first = false;
                 last_entry = entry;
@@ -117,7 +113,6 @@ fn print_number_of_valid_reports(reports: Vec<Vec<i32>>) {
         if (is_decreasing || is_increasing) && is_within_one_to_three {
             count_valid_reports += 1;
         }
-        println!();
     }
 
     println!("Found {} valid reports without dampeners", count_valid_reports);
