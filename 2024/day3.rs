@@ -1,10 +1,12 @@
 /*
-    ToDO: Split on regex: mul\(\d+,\d+\)
+    - ToDO: Split on regex: mul\(\d+,\d+\)
+     - add regex to your Cargo.toml if your ide doesn't on use
 */
 
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
+use regex::Regex;
 
 fn main() {
     let input_file = "src/input2.txt".to_string();
