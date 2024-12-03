@@ -11,12 +11,18 @@ use regex::Regex;
 fn main() {
     let input_file = "src/input2.txt".to_string();
     print_lines(input_file);
+
 }
 
 fn print_lines(input_file: String){
     if let Ok(lines) = read_lines(input_file) {
         for line in lines.flatten() {
             println!("{}", line);
+            let re = Regex::new(r"mul\(\d+,\d+\)").expect("Failed to compile regex");
+            let result: Vec<_> = re.splitn(line.as_str(), usize::MAX).collect();
+            for item in result.into_iter() {
+                println!("{}", item);
+            }
         }
     }
 }
