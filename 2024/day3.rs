@@ -19,10 +19,11 @@ fn print_lines(input_file: String){
         for line in lines.flatten() {
             println!("{}", line);
             let re = Regex::new(r"mul\(\d+,\d+\)").expect("Failed to compile regex");
-            let result: Vec<_> = re.splitn(line.as_str(), usize::MAX).collect();
-            for item in result.into_iter() {
+            let result = re.captures(line.as_str()).unwrap();
+            for item in result {
                 println!("{}", item);
             }
+
         }
     }
 }
