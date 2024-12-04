@@ -1,6 +1,6 @@
 /*
-    - ToDO: Split on regex: mul\((\d+,\d+)\)
-     - add regex to your Cargo.toml if your ide doesn't on use
+     - use "$ cargo add regex" if your ide doesn't auto add regex from use regex::Regex
+        to your Cargo.toml
 */
 
 use std::fs::File;
