@@ -32,12 +32,12 @@ fn print_number_of_valid_reports_using_dampener(reports: Vec<Vec<i32>>) {
         while count_outside < num_entries {
             for entry in report.clone() {
                 if count_inside == count_outside {
-                }else{
+                } else {
                     if is_first {
                         is_first = false;
                         last_entry = entry;
-                    }else{
-                        if ((entry - last_entry).abs() >= 1) && ((entry - last_entry).abs() <= 3 ) {
+                    } else {
+                        if ((entry - last_entry).abs() >= 1) && ((entry - last_entry).abs() <= 3) {
                             if is_increasing {
                                 if last_entry - entry < 0 {
                                     is_increasing = false;
@@ -48,7 +48,7 @@ fn print_number_of_valid_reports_using_dampener(reports: Vec<Vec<i32>>) {
                                     is_decreasing = false;
                                 }
                             }
-                        }else {
+                        } else {
                             is_within_one_to_three = false;
                         }
                     }
@@ -68,13 +68,15 @@ fn print_number_of_valid_reports_using_dampener(reports: Vec<Vec<i32>>) {
         }
         count_outside = 0;
 
-
         if valid_loop {
             count_valid_reports += 1;
         }
     }
 
-    println!("Found {} valid reports without dampeners", count_valid_reports);
+    println!(
+        "Found {} valid reports without dampeners",
+        count_valid_reports
+    );
 }
 
 fn print_number_of_valid_reports(reports: Vec<Vec<i32>>) {
@@ -92,8 +94,8 @@ fn print_number_of_valid_reports(reports: Vec<Vec<i32>>) {
             if is_first {
                 is_first = false;
                 last_entry = entry;
-            }else{
-                if ((entry - last_entry).abs() >= 1) && ((entry - last_entry).abs() <= 3 ) {
+            } else {
+                if ((entry - last_entry).abs() >= 1) && ((entry - last_entry).abs() <= 3) {
                     if is_increasing {
                         if last_entry - entry < 0 {
                             is_increasing = false;
@@ -104,7 +106,7 @@ fn print_number_of_valid_reports(reports: Vec<Vec<i32>>) {
                             is_decreasing = false;
                         }
                     }
-                }else {
+                } else {
                     is_within_one_to_three = false;
                 }
             }
@@ -115,11 +117,14 @@ fn print_number_of_valid_reports(reports: Vec<Vec<i32>>) {
         }
     }
 
-    println!("Found {} valid reports without dampeners", count_valid_reports);
+    println!(
+        "Found {} valid reports without dampeners",
+        count_valid_reports
+    );
 }
 
 fn print_lines(input_file: String) -> Vec<Vec<i32>> {
-    let mut reports:Vec<Vec<i32>> = Vec::new();
+    let mut reports: Vec<Vec<i32>> = Vec::new();
     let mut report: Vec<i32> = Vec::new();
     if let Ok(lines) = read_lines(input_file) {
         for line in lines.flatten() {
