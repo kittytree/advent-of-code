@@ -2,14 +2,18 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
+use std::time::Instant;
 
 fn main() {
+    let now = Instant::now();
     let input_file = "src/input.txt".to_string();
     let grid_map: HashMap<(i32,i32),String>;
     let max_row: i32;
     let max_col: i32;
     (grid_map, max_row, max_col) = get_grid_map(input_file);
     print_part_one_xmas_matches(grid_map.clone(), max_row, max_col);
+    let elapsed = now.elapsed();
+    println!("Elapsed: {:.2?}", elapsed);
 }
 
 fn print_part_one_xmas_matches(grid_map: HashMap<(i32,i32),String>, max_row: i32, max_col: i32) {
