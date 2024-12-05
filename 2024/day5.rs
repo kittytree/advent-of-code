@@ -13,8 +13,10 @@ fn main() {
 
     (page_ordering_rules, pages_to_produce) = get_production_rules_and_input(input_file);
 
+    print_part_one(page_ordering_rules.clone(), pages_to_produce.clone());
     let elapsed_time_to_part_one_complete = time_start.elapsed();
 
+    print_part_two(page_ordering_rules, pages_to_produce);
     let elapsed_time_to_part_two_complete = time_start.elapsed();
     println!(
         "Time to complete part one: {:.2?}",
@@ -24,6 +26,14 @@ fn main() {
         "Time to complete part two: {:.2?}",
         elapsed_time_to_part_two_complete
     );
+}
+
+fn print_part_two(page_ordering_rules: HashMap<u32, Vec<u32>>, pages_to_produce: Vec<Vec<u32>>) {
+    println!("part two");
+}
+
+fn print_part_one(page_ordering_rules: HashMap<u32, Vec<u32>>, pages_to_produce: Vec<Vec<u32>>) {
+    println!("part one");
 }
 
 fn get_production_rules_and_input(input_file: String) -> (HashMap<u32, Vec<u32>>, Vec<Vec<u32>>) {
@@ -37,8 +47,7 @@ fn get_production_rules_and_input(input_file: String) -> (HashMap<u32, Vec<u32>>
             println!("{}", line);
             if line.is_empty() {
                 finished_adding_rules = true;
-            }
-            if !finished_adding_rules {
+            } else if !finished_adding_rules {
                 let mut vec_of_rules: Vec<u32> = Vec::new();
                 let page_rule = line.split("|").collect::<Vec<&str>>();
 
@@ -53,7 +62,7 @@ fn get_production_rules_and_input(input_file: String) -> (HashMap<u32, Vec<u32>>
                     vec_of_rules.push(value);
                     page_ordering_rules.insert(key, vec_of_rules);
                 }
-            }else{
+            } else {
                 let page = line.split(",").collect::<Vec<&str>>();
                 let mut page_numbers: Vec<u32> = Vec::new();
                 for entry in page {
