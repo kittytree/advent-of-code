@@ -1,5 +1,11 @@
+/*
+    - ToDo add other way rule in input handdling. So if we encounter a page we can check
+        hash map for all the values it has to come after, aka a before page hash and after hash
+*/
+
 use std::collections::HashMap;
 use std::fs::File;
+use std::hash::Hash;
 use std::io::{self, BufRead};
 use std::path::Path;
 use std::time::Instant;
@@ -33,7 +39,16 @@ fn print_part_two(page_ordering_rules: HashMap<u32, Vec<u32>>, pages_to_produce:
 }
 
 fn print_part_one(page_ordering_rules: HashMap<u32, Vec<u32>>, pages_to_produce: Vec<Vec<u32>>) {
-    println!("part one");
+    let encountered_rules: HashMap<u32, Vec<u32>> = HashMap::new();
+    let hash_middle_numbers: HashMap<u32, u32> = HashMap::new();
+    let list_of_valid_pages: Vec<u32> = Vec::new();
+
+    for page in pages_to_produce {
+        for page_number in page {
+            print!("{} ", page_number);
+        }
+        println!();
+    }
 }
 
 fn get_production_rules_and_input(input_file: String) -> (HashMap<u32, Vec<u32>>, Vec<Vec<u32>>) {
@@ -72,7 +87,7 @@ fn get_production_rules_and_input(input_file: String) -> (HashMap<u32, Vec<u32>>
             }
         }
     }
-
+    println!();
     (page_ordering_rules, pages_to_produce)
 }
 
