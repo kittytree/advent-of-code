@@ -5,31 +5,105 @@ use std::path::Path;
 use std::time::Instant;
 
 fn main() {
-    let now = Instant::now();
+    let time_start = Instant::now();
     let input_file = "src/input.txt".to_string();
     let grid_map: HashMap<(i32, i32), String>;
     let max_row: i32;
     let max_col: i32;
     (grid_map, max_row, max_col) = get_grid_map(input_file);
     print_part_one_xmas_matches(grid_map.clone(), max_row, max_col);
-    let elapsed = now.elapsed();
-    println!("Elapsed: {:.2?}", elapsed);
+    let elapsed_time_to_part_one_complete = time_start.elapsed();
+    print_part_two_x_mas_matches(grid_map.clone(), max_row, max_col);
+    let elapsed_time_to_part_two_complete = time_start.elapsed();
+    println!(
+        "Time to complete part one: {:.2?}",
+        elapsed_time_to_part_one_complete
+    );
+    println!(
+        "Time to complete part two: {:.2?}",
+        elapsed_time_to_part_two_complete
+    );
+}
+
+fn print_part_two_x_mas_matches(grid_map: HashMap<(i32, i32), String>, max_row: i32, max_col: i32) {
+    let mut row: i32 = 0;
+    let mut col: i32 = 0;
+    let mut num_matches = 0;
+
+    while row < max_row {
+        while col < max_col {
+            match grid_map.get(&(row, col)).cloned() {
+                Some(character) => {
+                    if character == "A" {
+                        println!("A found at ({}, {})", row, col);
+                        if return_x_mas_match_check(grid_map.clone(), row, col) {
+                            num_matches += 1;
+                            println!("matched X-MAS on A here ({},{})", row, col);
+                        }
+                    }
+                }
+                None => {}
+            }
+            col += 1;
+        }
+        col = 0;
+        row += 1;
+    }
+    println!("Number of matches: {}", num_matches);
+}
+
+fn return_x_mas_match_check(grid_map: HashMap<(i32, i32), String>, row: i32, col: i32) -> bool {
+    let down_right_diagonal = check_mas_from_3_coords(
+        grid_map.clone(),
+        (row - 1, col - 1),
+        (row, col),
+        (row + 1, col + 1),
+    );
+
+    let down_right_diagonal_reversed = check_mas_from_3_coords(
+        grid_map.clone(),
+        (row + 1, col + 1),
+        (row, col),
+        (row - 1, col - 1),
+    );
+
+    if !(down_right_diagonal_reversed || down_right_diagonal) {
+        return false;
+    }
+
+    let down_left_diagonal = check_mas_from_3_coords(
+        grid_map.clone(),
+        (row + 1, col - 1),
+        (row, col),
+        (row - 1, col + 1),
+    );
+
+    let down_left_diagonal_reversed = check_mas_from_3_coords(
+        grid_map.clone(),
+        (row - 1, col + 1),
+        (row, col),
+        (row + 1, col - 1),
+    );
+
+    if !(down_left_diagonal_reversed || down_left_diagonal) {
+        return false;
+    }
+    true
 }
 
 fn print_part_one_xmas_matches(grid_map: HashMap<(i32, i32), String>, max_row: i32, max_col: i32) {
     let mut row: i32 = 0;
     let mut col: i32 = 0;
     let mut num_matches = 0;
-    println!("max_row {}, max_col {}", max_row, max_col);
     while row < max_row {
         while col < max_col {
             match grid_map.get(&(row, col)).cloned() {
                 Some(character) => {
                     if character == "X" {
-                        println!("here ({},{})", row, col);
+                        println!("X found at ({},{})", row, col);
                         let num_matches_on_x = return_max_match_check(grid_map.clone(), row, col);
                         if num_matches_on_x != 0 {
-                            println!("match here ({},{})", row, col);
+                            println!("matched XMAS on X here ({},{})", row, col);
                             num_matches += num_matches_on_x;
                         }
                     }
