@@ -1,8 +1,3 @@
-/*
-    - ToDo add other way rule in input handdling. So if we encounter a page we can check
-        hash map for all the values it has to come after, aka a before page hash and after hash
-*/
-
 use std::collections::HashMap;
 use std::fs::File;
 use std::hash::Hash;
@@ -12,7 +7,7 @@ use std::time::Instant;
 
 fn main() {
     let time_start = Instant::now();
-    let input_file = "src/input2.txt".to_string();
+    let input_file = "src/input.txt".to_string();
 
     let page_ordering_rules: HashMap<u32, Vec<u32>>;
     let pages_to_produce: Vec<Vec<u32>>;
@@ -39,16 +34,46 @@ fn print_part_two(page_ordering_rules: HashMap<u32, Vec<u32>>, pages_to_produce:
 }
 
 fn print_part_one(page_ordering_rules: HashMap<u32, Vec<u32>>, pages_to_produce: Vec<Vec<u32>>) {
-    let encountered_rules: HashMap<u32, Vec<u32>> = HashMap::new();
-    let hash_middle_numbers: HashMap<u32, u32> = HashMap::new();
-    let list_of_valid_pages: Vec<u32> = Vec::new();
+    let mut encountered_rules: HashMap<u32, bool> = HashMap::new();
+    let mut vec_middle_numbers: Vec<u32> = Vec::new();
+    let mut list_of_valid_pages: Vec<u32> = Vec::new();
+
+    let mut count = 0;
 
     for page in pages_to_produce {
-        for page_number in page {
-            print!("{} ", page_number);
+        let mut valid_page: bool = true;
+        for page_number in page.clone() {
+            if valid_page {
+                print!("{} ", page_number);
+                if page_ordering_rules.contains_key(&page_number) {
+                    let page_number_rules = page_ordering_rules.get(&page_number).unwrap();
+                    for rule in page_number_rules {
+                        if encountered_rules.contains_key(rule) {
+                            valid_page = false;
+                        }
+                    }
+                }
+                if valid_page {
+                    encountered_rules.insert(page_number, true);
+                }
+            }
         }
+        encountered_rules.clear();
+        if valid_page {
+            list_of_valid_pages.push(count);
+            vec_middle_numbers.push(page.get((page.len() - 1) / 2).unwrap().clone());
+        }
+        count += 1;
+        valid_page = true;
         println!();
     }
+    println!();
+
+    let mut sum_valid_middle_number = 0;
+    for middle_number in vec_middle_numbers {
+        sum_valid_middle_number += middle_number;
+    }
+    println!("Total middle number: {}", sum_valid_middle_number);
 }
 
 fn get_production_rules_and_input(input_file: String) -> (HashMap<u32, Vec<u32>>, Vec<Vec<u32>>) {
