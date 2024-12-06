@@ -31,11 +31,14 @@ fn main() {
     );
 }
 
-fn print_part_two(page_ordering_rules: HashMap<u32, Vec<u32>>,mut pages_to_produce: Vec<Vec<u32>>) {
+fn print_part_two(
+    page_ordering_rules: HashMap<u32, Vec<u32>>,
+    mut pages_to_produce: Vec<Vec<u32>>,
+) {
     println!("part two");
     let mut encountered_rules: HashMap<u32, bool> = HashMap::new();
     let mut all_pages_valid = false;
-    let mut valid_pages:Vec<Vec<u32>> = Vec::new();
+    let mut valid_pages: Vec<Vec<u32>> = Vec::new();
     let mut valid_page = true;
     let mut page_is_not_valid = true;
 
@@ -58,21 +61,21 @@ fn print_part_two(page_ordering_rules: HashMap<u32, Vec<u32>>,mut pages_to_produ
                         for rule in page_number_rules {
                             if encountered_rules.contains_key(rule) {
                                 valid_page = false;
-                                need_to_swap.insert(rule.clone(),page_number_count);
+                                need_to_swap.insert(rule.clone(), page_number_count);
                             }
                         }
                     }
                     encountered_rules.insert(page_number.clone(), true);
                     page_number_count += 1;
                 }
-            }else{
+            } else {
                 let mut count = 0;
                 while count < page.clone().len() {
                     if need_to_swap.contains_key(page.get(count).unwrap()) {
                         let index_to_swap_to = need_to_swap.get(&page[count]).unwrap();
-                        let index_to_swap_to_usize = usize::try_from(index_to_swap_to.clone()).unwrap();
+                        let index_to_swap_to_usize =
+                            usize::try_from(index_to_swap_to.clone()).unwrap();
                         page.swap(count, index_to_swap_to_usize);
-                        println!("meow");
                     }
                     count += 1;
                 }
@@ -83,7 +86,7 @@ fn print_part_two(page_ordering_rules: HashMap<u32, Vec<u32>>,mut pages_to_produ
             if valid_page {
                 page_is_not_valid = false;
                 vec_of_middles.push(page.get((page.len() - 1) / 2).unwrap().clone());
-            }else{
+            } else {
                 valid_page = true;
             }
         }
@@ -97,7 +100,6 @@ fn print_part_two(page_ordering_rules: HashMap<u32, Vec<u32>>,mut pages_to_produ
         println!("middle: {}", middle);
     }
     println!("Sum of middles: {}", sum_middles);
-
 }
 
 fn print_part_one_and_return_invalid_pages(
