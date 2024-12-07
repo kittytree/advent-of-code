@@ -98,7 +98,7 @@ fn print_part_two_infinite_positions(
             continue;
         }
 
-        while !exited_ice_maze && infinite_loop_count < 10000 {
+        while !exited_ice_maze && infinite_loop_count < row_count * col_count {
             //println!("bear");
             match current_orientation {
                 Orientation::Up => {
