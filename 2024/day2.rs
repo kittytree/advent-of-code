@@ -1,95 +1,142 @@
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
-use std::time::Instant;
 
 fn main() {
-    let time_start = Instant::now();
     let input_file = "src/input.txt".to_string();
-
-    let equations: Vec<(u64, Vec<u64>)>;
-
-    equations = process_input(input_file);
-
-    print_part_one_answer(&equations);
-    let elapsed_time_to_part_one_complete = time_start.elapsed();
-
-    let elapsed_time_to_part_two_complete = time_start.elapsed();
-    println!(
-        "Time to complete part one: {:.2?}",
-        elapsed_time_to_part_one_complete
-    );
-    println!(
-        "Time to complete part two: {:.2?}",
-        elapsed_time_to_part_two_complete
-    );
+    let reports: Vec<Vec<i32>>;
+    reports = print_lines(input_file);
+    print_number_of_valid_reports(reports.clone());
+    println!();
+    // I needed a hint of using brute force to solve part 2
+    // was trying to do dynamic programming at first and failed :/
+    print_number_of_valid_reports_using_dampener(reports.clone());
 }
 
-fn print_part_one_answer(equations: &Vec<(u64, Vec<u64>)>) {
-    println!("Part One:");
-    let mut sum_valid_equations = 0;
-    for equation in equations {
-        println!("{:?}", equation);
-        let is_valid_equation = recursive_equation_finding(equation.0, equation.1.clone(), 0, 0);
-        if is_valid_equation {
-            println!("Valid Equation");
-            sum_valid_equations += equation.0;
+fn print_number_of_valid_reports_using_dampener(reports: Vec<Vec<i32>>) {
+    let mut count_valid_reports = 0;
+
+    let mut last_entry: i32 = 0;
+
+    for report in reports {
+        let mut is_first = true;
+        let mut is_decreasing = true;
+        let mut is_increasing = true;
+        let mut is_within_one_to_three = true;
+
+        let num_entries = report.len();
+        let mut count_outside = 0;
+        let mut count_inside = 0;
+        let mut valid_loop = false;
+
+        while count_outside < num_entries {
+            for entry in report.clone() {
+                if count_inside == count_outside {
+                } else {
+                    if is_first {
+                        is_first = false;
+                        last_entry = entry;
+                    } else {
+                        if ((entry - last_entry).abs() >= 1) && ((entry - last_entry).abs() <= 3) {
+                            if is_increasing {
+                                if last_entry - entry < 0 {
+                                    is_increasing = false;
+                                }
+                            }
+                            if is_decreasing {
+                                if last_entry - entry > 0 {
+                                    is_decreasing = false;
+                                }
+                            }
+                        } else {
+                            is_within_one_to_three = false;
+                        }
+                    }
+                    last_entry = entry;
+                }
+                count_inside += 1;
+            }
+            if (is_decreasing || is_increasing) && is_within_one_to_three {
+                valid_loop = true;
+            }
+            count_inside = 0;
+            count_outside += 1;
+            is_first = true;
+            is_decreasing = true;
+            is_increasing = true;
+            is_within_one_to_three = true;
+        }
+        count_outside = 0;
+
+        if valid_loop {
+            count_valid_reports += 1;
         }
     }
-    println!("Sum of Valid Equations: {}", sum_valid_equations);
+
+    println!(
+        "Found {} valid reports without dampeners",
+        count_valid_reports
+    );
 }
 
-fn recursive_equation_finding(answer: u64, inputs: Vec<u64>, result: u64, index: usize) -> bool {
-    match result == answer {
-        true => {
-            true
-        }
-        false => match index < inputs.len() {
-            false => false,
-            true => {
-                let popped_input = inputs.get(index).unwrap();
-                let plus_path: bool = recursive_equation_finding(
-                    answer,
-                    inputs.clone(),
-                    result + popped_input,
-                    index + 1,
-                );
-                match plus_path {
-                    false => recursive_equation_finding(
-                        answer,
-                        inputs.clone(),
-                        result * popped_input,
-                        index + 1,
-                    ),
-                    true => {
-                        println!("Answer Finding: {} with result {}", answer, result);
-                        true
+fn print_number_of_valid_reports(reports: Vec<Vec<i32>>) {
+    let mut count_valid_reports = 0;
+
+    let mut last_entry: i32 = 0;
+
+    for report in reports {
+        let mut is_first = true;
+        let mut is_decreasing = true;
+        let mut is_increasing = true;
+        let mut is_within_one_to_three = true;
+
+        for entry in report {
+            if is_first {
+                is_first = false;
+                last_entry = entry;
+            } else {
+                if ((entry - last_entry).abs() >= 1) && ((entry - last_entry).abs() <= 3) {
+                    if is_increasing {
+                        if last_entry - entry < 0 {
+                            is_increasing = false;
+                        }
                     }
+                    if is_decreasing {
+                        if last_entry - entry > 0 {
+                            is_decreasing = false;
+                        }
+                    }
+                } else {
+                    is_within_one_to_three = false;
                 }
             }
-        },
-    }
-}
-
-fn process_input(input_file: String) -> Vec<(u64, Vec<u64>)> {
-    let mut equation: Vec<(u64, Vec<u64>)> = Vec::new();
-    if let Ok(lines) = read_lines(input_file) {
-        let mut answer: u64 = 0;
-        let mut inputs: Vec<u64> = Vec::new();
-        for line in lines.flatten() {
-            let split_line = line.split(": ").collect::<Vec<&str>>();
-            answer = split_line[0].parse::<u64>().unwrap();
-            for x in split_line[1].split(" ") {
-                let number = x.parse::<u64>().unwrap();
-                inputs.push(number);
-            }
-            equation.push((answer, inputs));
-            answer = 0;
-            inputs = Vec::new();
+            last_entry = entry;
+        }
+        if (is_decreasing || is_increasing) && is_within_one_to_three {
+            count_valid_reports += 1;
         }
     }
 
-    equation
+    println!(
+        "Found {} valid reports without dampeners",
+        count_valid_reports
+    );
+}
+
+fn print_lines(input_file: String) -> Vec<Vec<i32>> {
+    let mut reports: Vec<Vec<i32>> = Vec::new();
+    let mut report: Vec<i32> = Vec::new();
+    if let Ok(lines) = read_lines(input_file) {
+        for line in lines.flatten() {
+            let split_line = line.split(" ").collect::<Vec<&str>>();
+            for item in split_line {
+                report.push(item.parse::<i32>().unwrap());
+            }
+            reports.push(report);
+            report = Vec::new();
+        }
+    }
+    reports
 }
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
