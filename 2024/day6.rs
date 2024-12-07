@@ -25,7 +25,12 @@ fn main() {
     print_part_one_traveled_distance(row_count, col_count, &starting_position, &hash_of_obstacles);
     let elapsed_time_to_part_one_complete = time_start.elapsed();
 
-    print_part_two_infinite_positions(row_count, col_count, &starting_position, &mut hash_of_obstacles);
+    print_part_two_infinite_positions(
+        row_count,
+        col_count,
+        &starting_position,
+        &mut hash_of_obstacles,
+    );
     let elapsed_time_to_part_two_complete = time_start.elapsed();
 
     println!(
@@ -79,16 +84,16 @@ fn print_part_two_infinite_positions(
             }
         }
 
-         if inf_row >= row_count && inf_col >= col_count {
+        if inf_row >= row_count && inf_col >= col_count {
             break;
-        }else if inf_col >= col_count {
+        } else if inf_col >= col_count {
             inf_col = 0;
             inf_row += 1;
         }
 
         if !hash_of_obstacles.contains_key(&(inf_row, inf_col)) {
             hash_of_obstacles.insert((inf_row, inf_col), String::new());
-        }else{
+        } else {
             inf_col += 1;
             continue;
         }
@@ -138,19 +143,14 @@ fn print_part_two_infinite_positions(
         }
         if exited_ice_maze {
             exited_ice_maze = false;
-        }else{
+        } else {
             count_loops += 1;
         }
         hash_of_obstacles.remove(&(inf_row, inf_col));
         inf_col += 1;
-
     }
 
-
-    println!(
-        "number of infinite loops is {}",
-        count_loops
-    );
+    println!("number of infinite loops is {}", count_loops);
 }
 
 fn print_part_one_traveled_distance(
