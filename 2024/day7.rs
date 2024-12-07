@@ -13,7 +13,7 @@ fn main() {
 
     print_part_one_answer(&equations);
     let elapsed_time_to_part_one_complete = time_start.elapsed();
-
+    print_part_two_answer(&equations);
     let elapsed_time_to_part_two_complete = time_start.elapsed();
     println!(
         "Time to complete part one: {:.2?}",
@@ -25,28 +25,31 @@ fn main() {
     );
 }
 
-fn print_part_one_answer(equations: &Vec<(u64, Vec<u64>)>) {
-    println!("Part One:");
+fn print_part_two_answer(equations: &Vec<(u64, Vec<u64>)>) {
     let mut sum_valid_equations = 0;
     for equation in equations {
-        println!("{:?}", equation);
-        let is_valid_equation = recursive_equation_finding(equation.0, equation.1.clone(), 0, 0);
+        let is_valid_equation =
+            recursive_equation_finding_part_two(equation.0, equation.1.clone(), 0, 0);
         if is_valid_equation {
-            println!("Valid Equation");
             sum_valid_equations += equation.0;
         }
     }
     println!("Sum of Valid Equations: {}", sum_valid_equations);
 }
 
-fn recursive_equation_finding(answer: u64, inputs: Vec<u64>, result: u64, index: usize) -> bool {
+fn recursive_equation_finding_part_two(
+    answer: u64,
+    inputs: Vec<u64>,
+    result: u64,
+    index: usize,
+) -> bool {
     match result == answer && index == inputs.len() {
         true => true,
         false => match index < inputs.len() {
             false => false,
             true => {
                 let popped_input = inputs.get(index).unwrap();
-                let plus_path: bool = recursive_equation_finding(
+                let plus_path: bool = recursive_equation_finding_part_two(
                     answer,
                     inputs.clone(),
                     result + popped_input,
@@ -55,7 +58,7 @@ fn recursive_equation_finding(answer: u64, inputs: Vec<u64>, result: u64, index:
                 match plus_path {
                     false => match index == 0 {
                         true => {
-                            let mult_path = recursive_equation_finding(
+                            let mult_path = recursive_equation_finding_part_two(
                                 answer,
                                 inputs.clone(),
                                 1 * popped_input,
@@ -70,7 +73,7 @@ fn recursive_equation_finding(answer: u64, inputs: Vec<u64>, result: u64, index:
                                         .trim()
                                         .parse::<u64>()
                                         .unwrap();
-                                    recursive_equation_finding(
+                                    recursive_equation_finding_part_two(
                                         answer,
                                         inputs.clone(),
                                         concat_input,
@@ -80,7 +83,7 @@ fn recursive_equation_finding(answer: u64, inputs: Vec<u64>, result: u64, index:
                             }
                         }
                         false => {
-                            let mult_path = recursive_equation_finding(
+                            let mult_path = recursive_equation_finding_part_two(
                                 answer,
                                 inputs.clone(),
                                 result * popped_input,
@@ -94,7 +97,7 @@ fn recursive_equation_finding(answer: u64, inputs: Vec<u64>, result: u64, index:
                                         .trim()
                                         .parse::<u64>()
                                         .unwrap();
-                                    recursive_equation_finding(
+                                    recursive_equation_finding_part_two(
                                         answer,
                                         inputs.clone(),
                                         concat_input,
@@ -112,20 +115,69 @@ fn recursive_equation_finding(answer: u64, inputs: Vec<u64>, result: u64, index:
     }
 }
 
+fn print_part_one_answer(equations: &Vec<(u64, Vec<u64>)>) {
+    let mut sum_valid_equations = 0;
+    for equation in equations {
+        let is_valid_equation =
+            recursive_equation_finding_part_one(equation.0, equation.1.clone(), 0, 0);
+        if is_valid_equation {
+            sum_valid_equations += equation.0;
+        }
+    }
+    println!("Sum of Valid Equations: {}", sum_valid_equations);
+}
+fn recursive_equation_finding_part_one(
+    answer: u64,
+    inputs: Vec<u64>,
+    result: u64,
+    index: usize,
+) -> bool {
+    match result == answer && index == inputs.len() {
+        true => true,
+        false => match index < inputs.len() {
+            false => false,
+            true => {
+                let popped_input = inputs.get(index).unwrap();
+                let plus_path: bool = recursive_equation_finding_part_one(
+                    answer,
+                    inputs.clone(),
+                    result + popped_input,
+                    index + 1,
+                );
+                match plus_path {
+                    false => match index == 0 {
+                        true => recursive_equation_finding_part_one(
+                            answer,
+                            inputs.clone(),
+                            1 * popped_input,
+                            index + 1,
+                        ),
+                        false => recursive_equation_finding_part_one(
+                            answer,
+                            inputs.clone(),
+                            result * popped_input,
+                            index + 1,
+                        ),
+                    },
+                    true => true,
+                }
+            }
+        },
+    }
+}
+
 fn process_input(input_file: String) -> Vec<(u64, Vec<u64>)> {
     let mut equation: Vec<(u64, Vec<u64>)> = Vec::new();
     if let Ok(lines) = read_lines(input_file) {
-        let mut answer: u64 = 0;
         let mut inputs: Vec<u64> = Vec::new();
         for line in lines.flatten() {
             let split_line = line.split(": ").collect::<Vec<&str>>();
-            answer = split_line[0].parse::<u64>().unwrap();
+            let answer = split_line[0].parse::<u64>().unwrap();
             for x in split_line[1].split(" ") {
                 let number = x.parse::<u64>().unwrap();
                 inputs.push(number);
             }
             equation.push((answer, inputs));
-            answer = 0;
             inputs = Vec::new();
         }
     }
