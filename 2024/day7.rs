@@ -54,18 +54,56 @@ fn recursive_equation_finding(answer: u64, inputs: Vec<u64>, result: u64, index:
                 );
                 match plus_path {
                     false => match index == 0 {
-                        true => recursive_equation_finding(
-                            answer,
-                            inputs.clone(),
-                            1 * popped_input,
-                            index + 1,
-                        ),
-                        false => recursive_equation_finding(
-                            answer,
-                            inputs.clone(),
-                            result * popped_input,
-                            index + 1,
-                        ),
+                        true => {
+                            let mult_path = recursive_equation_finding(
+                                answer,
+                                inputs.clone(),
+                                1 * popped_input,
+                                index + 1,
+                            );
+                            match mult_path {
+                                true => true,
+                                false => {
+                                    let result_as_string = result.to_string();
+                                    let popped_input_as_string = popped_input.to_string();
+                                    let concat_input = (result_as_string + &popped_input_as_string)
+                                        .trim()
+                                        .parse::<u64>()
+                                        .unwrap();
+                                    recursive_equation_finding(
+                                        answer,
+                                        inputs.clone(),
+                                        concat_input,
+                                        index + 1,
+                                    )
+                                }
+                            }
+                        }
+                        false => {
+                            let mult_path = recursive_equation_finding(
+                                answer,
+                                inputs.clone(),
+                                result * popped_input,
+                                index + 1,
+                            );
+                            match mult_path {
+                                false => {
+                                    let result_as_string = result.to_string();
+                                    let popped_input_as_string = popped_input.to_string();
+                                    let concat_input = (result_as_string + &popped_input_as_string)
+                                        .trim()
+                                        .parse::<u64>()
+                                        .unwrap();
+                                    recursive_equation_finding(
+                                        answer,
+                                        inputs.clone(),
+                                        concat_input,
+                                        index + 1,
+                                    )
+                                }
+                                true => true,
+                            }
+                        }
                     },
                     true => true,
                 }
